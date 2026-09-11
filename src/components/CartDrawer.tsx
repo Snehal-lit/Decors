@@ -21,7 +21,7 @@ export default function CartDrawer() {
     message += "\nPlease let me know the availability and next steps.";
 
     const encodedMessage = encodeURIComponent(message);
-    const waUrl = `https://wa.me/919820045812?text=${encodedMessage}`;
+    const waUrl = `https://wa.me/917416252872?text=${encodedMessage}`;
     window.open(waUrl, "_blank");
   };
 
