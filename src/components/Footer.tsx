@@ -10,11 +10,7 @@ export default function Footer() {
             Indian Event & Wedding Decor
           </p>
         </div>
-        <div className="flex items-center gap-8 text-[10px] tracking-widest uppercase text-brand-stone/60">
-          <a href="#" className="hover:text-brand-stone transition-colors">Client Services</a>
-          <a href="#" className="hover:text-brand-stone transition-colors">Privacy</a>
-          <a href="#" className="hover:text-brand-stone transition-colors">Terms</a>
-        </div>
+
       </div>
       <div className="max-w-[1720px] mx-auto mt-12 pt-8 border-t border-brand-stone/10 text-center text-[9px] tracking-widest uppercase text-brand-stone/40">
         &copy; {new Date().getFullYear()} Siri Decor. All rights reserved.
