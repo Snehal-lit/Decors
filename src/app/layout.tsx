@@ -24,8 +24,8 @@ const pinyon = Pinyon_Script({
 });
 
 export const metadata: Metadata = {
-  title: "SIRI — Architectural Atelier & Digital Showroom",
-  description: "A curated sanctuary where timeless architecture, chiseled form, and noble textiles converge.",
+  title: "Siri Decor — Premium Indian Event & Wedding Decor",
+  description: "Discover our curated collection of luxury decoration items, return gifts, marriage garlands, and elegant wall decor.",
 };
 
 export default function RootLayout({
