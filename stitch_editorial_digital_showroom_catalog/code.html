@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SIRI — Architectural Atelier &amp; Digital Showroom</title>
+<!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans, Pinyon Script & Alex Brush -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&amp;family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&amp;family=Pinyon+Script&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              stone: '#f7f5f0',
+              warm: '#f2eee6',
+              border: '#e4decfa0',
+              taupe: '#9c9284',
+              muted: '#70685e',
+              charcoal: '#171513',
+              pure: '#0f0e0d',
+              gold: '#c5a059',
+              terracotta: '#b86b53'
+            }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'sans-serif'],
+            script: ['"Pinyon Script"', '"Alex Brush"', 'cursive'],
+          },
+          letterSpacing: {
+            'widest-xl': '0.28em',
+            'luxury': '0.18em'
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #f7f5f0;
+      color: #171513;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-serif-display {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .font-script-luxury {
+      font-family: 'Pinyon Script', 'Alex Brush', cursive;
+    }
+    /* Hide scrollbar for carousel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Grain texture overlay */
+    .grain-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      z-index: 999;
+    }
+    /* Smooth modal transition */
+    .modal-backdrop {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Ultra-luxurious Handwriting SVG / Stroke Animation */
+    .handwriting-path {
+      stroke-dasharray: 2200;
+      stroke-dashoffset: 2200;
+      animation: writePath 3.6s cubic-bezier(0.42, 0, 0.2, 1) forwards;
+    }
+
+    .handwriting-fill {
+      opacity: 0;
+      animation: fillInText 1.4s ease forwards 2.6s;
+    }
+
+    /* Pen / Quill Sparkle Tip following the writing motion */
+    .pen-quill {
+      animation: quillFollow 3.6s cubic-bezier(0.42, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes writePath {
+      0% {
+        stroke-dashoffset: 2200;
+      }
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes fillInText {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes quillFollow {
+      0% {
+        opacity: 0;
+        transform: translate(20px, 80px) scale(0.8);
+      }
+      8% {
+        opacity: 1;
+      }
+      85% {
+        opacity: 1;
+        transform: translate(92%, 85%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(98%, 88%) scale(0.6);
+      }
+    }
+
+    /* Secondary Replay pulse button */
+    .replay-btn:hover svg {
+      transform: rotate(-180deg);
+      transition: transform 0.6s ease;
+    }
+  </style>
+</head>
+<body class="relative selection:bg-brand-charcoal selection:text-brand-stone">
+<div class="grain-overlay"></div>
+<!-- FLOATING EDITORIAL NAVIGATION -->
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-[#f7f5f0]/85 backdrop-blur-md border-b border-brand-border/40">
+<div class="max-w-[1720px] mx-auto px-6 md:px-12 h-20 md:h-24 flex items-center justify-between">
+<!-- Brand Left / Monogram -->
+<a class="flex items-center gap-3 group" href="#hero">
+<span class="font-serif-display text-2xl md:text-3xl font-normal tracking-[0.22em] text-brand-charcoal uppercase group-hover:opacity-75 transition-opacity">SIRI</span>
+<span class="hidden sm:inline-block h-3 w-[1px] bg-brand-taupe/40"></span>
+<span class="hidden sm:inline-block text-[10px] tracking-widest-xl uppercase text-brand-muted font-medium">Digital Showroom</span>
+</a>
+<!-- Desktop Nav Items -->
+<nav class="hidden md:flex items-center gap-10 lg:gap-14">
+<a class="text-xs uppercase tracking-luxury text-brand-charcoal/80 hover:text-brand-charcoal transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-brand-charcoal hover:after:w-full after:transition-all" href="#curation">The Atelier</a>
+<a class="text-xs uppercase tracking-luxury text-brand-charcoal/80 hover:text-brand-charcoal transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-brand-charcoal hover:after:w-full after:transition-all" href="#categories">Collections</a>
+<a class="text-xs uppercase tracking-luxury text-brand-charcoal/80 hover:text-brand-charcoal transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-brand-charcoal hover:after:w-full after:transition-all" href="#showcase">Catalog</a>
+<a class="text-xs uppercase tracking-luxury text-brand-charcoal/80 hover:text-brand-charcoal transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-brand-charcoal hover:after:w-full after:transition-all" href="#story">Story</a>
+<a class="text-xs uppercase tracking-luxury text-brand-charcoal/80 hover:text-brand-charcoal transition-colors relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1px] after:bg-brand-charcoal hover:after:w-full after:transition-all" href="#contact">Private Client</a>
+</nav>
+<!-- Right Action & Mobile Toggle -->
+<div class="flex items-center gap-4 md:gap-6">
+<a class="hidden sm:inline-flex items-center gap-2 border border-brand-charcoal/30 px-4 py-2 rounded-full text-[11px] uppercase tracking-luxury hover:bg-brand-charcoal hover:text-brand-stone transition-all duration-300" href="#contact">
+<span>Inquire</span>
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+</a>
+<button aria-label="Toggle Navigation" class="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-1.5 focus:outline-none" onclick="toggleMobileMenu()">
+<span class="w-6 h-[1.5px] bg-brand-charcoal transition-transform" id="menu-line-1"></span>
+<span class="w-4 h-[1.5px] bg-brand-charcoal self-end transition-transform" id="menu-line-2"></span>
+</button>
+</div>
+</div>
+<!-- Mobile Drawer Overlay -->
+<div class="hidden md:hidden fixed inset-x-0 top-[80px] bg-brand-stone/98 border-b border-brand-border px-8 py-10 shadow-2xl transition-all duration-300" id="mobile-menu">
+<div class="flex flex-col gap-6 text-left">
+<span class="text-[10px] tracking-widest-xl uppercase text-brand-taupe">Navigation</span>
+<a class="font-serif-display text-3xl text-brand-charcoal hover:italic" href="#hero" onclick="toggleMobileMenu()">01. Index</a>
+<a class="font-serif-display text-3xl text-brand-charcoal hover:italic" href="#curation" onclick="toggleMobileMenu()">02. The Atelier</a>
+<a class="font-serif-display text-3xl text-brand-charcoal hover:italic" href="#categories" onclick="toggleMobileMenu()">03. Collections</a>
+<a class="font-serif-display text-3xl text-brand-charcoal hover:italic" href="#showcase" onclick="toggleMobileMenu()">04. Product Catalog</a>
+<a class="font-serif-display text-3xl text-brand-charcoal hover:italic" href="#story" onclick="toggleMobileMenu()">05. Brand Philosophy</a>
+<a class="font-serif-display text-3xl text-brand-charcoal hover:italic" href="#contact" onclick="toggleMobileMenu()">06. Private Consultation</a>
+<div class="pt-6 border-t border-brand-border/60 flex items-center justify-between text-xs tracking-widest uppercase text-brand-muted">
+<span>Mumbai · Paris · Milan</span>
+<span>WhatsApp Concierge</span>
+</div>
+</div>
+</div>
+</header>
+<!-- 1. HERO — DRAMATIC EDITORIAL STATEMENT (BUSINESS NAME IS THE STAR) -->
+<section class="relative min-h-screen w-full flex flex-col justify-between pt-28 pb-12 px-6 md:px-16 lg:px-24 overflow-hidden" id="hero">
+<!-- Subtle Background Image Crop with soft chiaroscuro overlay (IMAGE_6) -->
+<div class="absolute inset-0 z-0 pointer-events-none opacity-20 md:opacity-25 mix-blend-multiply overflow-hidden">
+<img alt="Showroom Travertine Background" class="w-full h-full object-cover object-center scale-105 transform hover:scale-100 transition-transform duration-1000 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"/>
+<div class="absolute inset-0 bg-gradient-to-b from-[#f7f5f0]/80 via-transparent to-[#f7f5f0]"></div>
+</div>
+<!-- Top Metadata Eyebrows -->
+<div class="relative z-10 max-w-[1720px] w-full mx-auto flex flex-wrap items-center justify-between pt-6 border-t border-brand-border/60 text-brand-muted text-[11px] md:text-xs tracking-widest-xl uppercase">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-brand-gold animate-pulse"></span>
+<span>Digital Lookbook / Vol. IV</span>
+</div>
+<div class="hidden sm:block">Architectural Silhouettes &amp; Natural Tactility</div>
+<div>Edition MMXXIV — 2025</div>
+</div>
+<!-- Centerpiece Typography: Business Name Prominent as Exquisite Fine Art Cursive Script -->
+<div class="relative z-10 max-w-[1720px] w-full mx-auto my-auto py-8 md:py-16 flex flex-col items-start justify-center">
+<div class="flex items-center justify-between w-full mb-3 md:mb-5">
+<p class="font-sans text-xs md:text-sm uppercase tracking-[0.35em] text-brand-taupe pl-1">
+          Haute Couture · Architectural Interiors · Curated Objects
+        </p>
+<button class="replay-btn hidden sm:flex items-center gap-2 text-[10px] tracking-widest-xl uppercase text-brand-muted hover:text-brand-charcoal transition-colors px-3 py-1 border border-brand-border/60 rounded-full bg-brand-stone/60 backdrop-blur-sm" onclick="replayHandwritingAnimation()" title="Replay Handwriting">
+<span>Replay Flourish</span>
+<svg class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+</button>
+</div>
+<!-- Monumental Cursive Handwriting Heading with Live Stroke Drawing Animation -->
+<div class="relative w-full overflow-visible select-none py-2 md:py-4" id="handwriting-container">
+<!-- SVG Vector Path Stroke Handwriting Animation for Ultra Crisp High-End Calligraphy -->
+<svg aria-label="Siri Fashion Store in luxury handwriting calligraphy" class="w-full h-auto max-h-[380px] sm:max-h-[460px] md:max-h-[540px] drop-shadow-[0_2px_12px_rgba(23,21,19,0.06)]" id="cursive-svg" preserveaspectratio="xMinYMid meet" viewbox="0 0 1380 340">
+<defs>
+<filter height="110%" id="ink-bleed" width="110%" x="-5%" y="-5%">
+<feturbulence basefrequency="0.04" numoctaves="2" result="noise" type="fractalNoise"></feturbulence>
+<fedisplacementmap in="SourceGraphic" in2="noise" scale="0.8" xchannelselector="R" ychannelselector="G"></fedisplacementmap>
+</filter>
+<!-- Gold nib gradient -->
+<lineargradient id="nib-grad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#e9c882"></stop>
+<stop offset="50%" stop-color="#c5a059"></stop>
+<stop offset="100%" stop-color="#8d6b2c"></stop>
+</lineargradient>
+</defs>
+<!-- Shadow Layer for Depth -->
+<text class="font-script-luxury italic" style="font-family: 'Pinyon Script', 'Alex Brush', cursive; font-size: 190px; font-style: italic; letter-spacing: 0.01em; fill: #171513; opacity: 0.08;" x="18" y="198">
+            Siri Fashion Store
+          </text>
+<!-- Base Fill text (fades in as writing finishes for richness) -->
+<text class="handwriting-fill font-script-luxury" style="font-family: 'Pinyon Script', 'Alex Brush', cursive; font-size: 190px; font-weight: 400; font-style: italic; letter-spacing: 0.01em; fill: #171513; fill-rule: nonzero;" x="12" y="192">
+            Siri Fashion Store
+          </text>
+<!-- Stroke Outline Writing Animation Layer -->
+<text class="handwriting-path font-script-luxury" style="font-family: 'Pinyon Script', 'Alex Brush', cursive; font-size: 190px; font-weight: 400; font-style: italic; letter-spacing: 0.01em; fill: transparent; stroke: #171513; stroke-width: 2.6px; stroke-linecap: round; stroke-linejoin: round;" x="12" y="192">
+            Siri Fashion Store
+          </text>
+<!-- Exquisite Calligraphic Decorative Flourish Underline (Drawn with SVG stroke) -->
+<path class="handwriting-path" d="M 28 226 C 240 248, 520 258, 820 220 C 980 200, 1140 216, 1260 234 C 1170 246, 940 252, 720 242 C 480 232, 280 244, 90 258" style="fill: none; stroke: #c5a059; stroke-width: 1.75px; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85;"></path>
+</svg>
+<!-- Quill / Gold Ink Flourish Accent Spark that tracks entrance -->
+<div class="pen-quill pointer-events-none absolute top-0 left-0 hidden md:block w-5 h-5 -mt-2 -ml-2" id="quill-nib">
+<span class="relative flex h-3.5 w-3.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-gradient-to-tr from-[#947132] to-[#f4db9a] shadow-lg"></span>
+</span>
+</div>
+</div>
+<!-- Sophisticated Brand Tagline & Editorial Subline -->
+<div class="mt-6 md:mt-10 grid grid-cols-1 md:grid-cols-12 gap-6 w-full items-end border-b border-brand-border/60 pb-12">
+<div class="md:col-span-6 lg:col-span-5">
+<p class="font-serif-display italic text-2xl sm:text-3xl md:text-4xl text-brand-charcoal/90 leading-tight">
+            “A curated sanctuary where timeless architecture, chiseled form, and noble textiles converge.”
+          </p>
+</div>
+<div class="md:col-span-6 lg:col-span-4 lg:col-start-8 text-xs md:text-sm text-brand-muted leading-relaxed font-light">
+          Crafting beautiful spaces and garments with timeless character. An uncompromising celebration of raw travertine, tactile cashmere, hand-stitched saddlery, and sculpted presence. Designed in our studio, made for discerning collectors.
+        </div>
+</div>
+</div>
+<!-- Hero Bottom Bar & Scroll Indicator -->
+<div class="relative z-10 max-w-[1720px] w-full mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs tracking-luxury uppercase text-brand-charcoal">
+<div class="flex items-center gap-8 text-[11px] text-brand-muted">
+<span>Curated Pieces: 48</span>
+<span>Worldwide Atelier Dispatch</span>
+<span class="hidden md:inline">Appointments Only</span>
+</div>
+<a class="group inline-flex items-center gap-3 text-xs tracking-widest-xl uppercase hover:text-brand-gold transition-colors py-2" href="#curation">
+<span class="relative overflow-hidden inline-block">
+<span class="inline-block transition-transform duration-300 group-hover:-translate-y-full">Scroll to Explore</span>
+<span class="absolute top-0 left-0 inline-block translate-y-full transition-transform duration-300 group-hover:translate-y-0 text-brand-charcoal font-medium">Discover Lookbook</span>
+</span>
+<svg class="w-4 h-4 transform group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+</svg>
+</a>
+</div>
+</section>
+<!-- 5. TRANSITION FROM HERO TO CATALOG — THE CURATION MANIFESTO -->
+<section class="relative py-24 md:py-36 px-6 md:px-16 lg:px-24 bg-brand-warm border-t border-brand-border" id="curation">
+<div class="max-w-[1720px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+<div class="lg:col-span-5">
+<span class="text-[11px] font-medium tracking-widest-xl uppercase text-brand-taupe block mb-4">
+            01 / Curated For Your Space &amp; Wardrobe
+          </span>
+<h2 class="font-serif-display text-4xl sm:text-5xl md:text-6xl font-light text-brand-charcoal leading-[1.08] tracking-tight">
+            Designed to be noticed. <br class="hidden sm:block"/>
+<span class="italic font-normal">Made to belong.</span>
+</h2>
+<div class="w-16 h-[1px] bg-brand-charcoal mt-8 mb-8"></div>
+<p class="text-sm md:text-base text-brand-muted leading-relaxed font-light">
+            Every piece in the Siri catalog is an exercise in quiet restraint. We reject fast trends in favor of sculpted permanence — partnering directly with master stonemasons, Tuscan tanners, and bespoke tailors who understand that true luxury lives in tactile nuance, proportion, and enduring grace.
+          </p>
+<div class="mt-8 flex items-center gap-6">
+<div>
+<div class="font-serif-display text-3xl text-brand-charcoal">100%</div>
+<div class="text-[10px] tracking-widest uppercase text-brand-muted">Artisanal Provenance</div>
+</div>
+<div class="h-8 w-[1px] bg-brand-border"></div>
+<div>
+<div class="font-serif-display text-3xl text-brand-charcoal">Limited</div>
+<div class="text-[10px] tracking-widest uppercase text-brand-muted">Showroom Runs</div>
+</div>
+</div>
+</div>
+<!-- Architectural Visual Composition with Editorial Framing (IMAGE_6) -->
+<div class="lg:col-span-7">
+<div class="relative group overflow-hidden bg-brand-stone border border-brand-border shadow-sm">
+<img alt="Showroom Travertine Arch" class="w-full h-[380px] sm:h-[480px] md:h-[540px] object-cover object-center filter grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"/>
+<div class="absolute bottom-0 inset-x-0 p-6 md:p-8 bg-gradient-to-t from-brand-charcoal/80 via-brand-charcoal/30 to-transparent text-white flex justify-between items-end">
+<div>
+<span class="text-[10px] uppercase tracking-widest text-brand-warm/80">Spatial Concept</span>
+<h4 class="font-serif-display text-2xl sm:text-3xl font-light">The Travertine Pavilion</h4>
+</div>
+<span class="text-xs uppercase tracking-widest text-brand-gold">Private View</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. CATEGORY SECTION — VISUALLY RICH EDITORIAL CAROUSEL -->
+<section class="py-24 md:py-32 px-6 md:px-16 lg:px-24 bg-brand-stone" id="categories">
+<div class="max-w-[1720px] mx-auto">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between mb-12 border-b border-brand-border/70 pb-6 gap-4">
+<div>
+<span class="text-[10px] md:text-[11px] font-medium tracking-widest-xl uppercase text-brand-taupe block mb-2">
+            02 / Taxonomy of Forms
+          </span>
+<h3 class="font-serif-display text-3xl sm:text-4xl md:text-5xl font-light text-brand-charcoal">
+            Browse by Department
+          </h3>
+</div>
+<p class="text-xs text-brand-muted uppercase tracking-luxury max-w-xs sm:text-right">
+          Swipe or scroll through our six sovereign curations
+        </p>
+</div>
+<!-- Categories Horizontal Reel (Mobile Touch Scroll + Desktop Responsive Asymmetric Cards) -->
+<div class="flex overflow-x-auto gap-6 sm:gap-8 pb-8 pt-2 no-scrollbar scroll-smooth">
+<!-- Category 1: Couture & Outerwear (IMAGE_5) -->
+<div class="flex-none w-[280px] sm:w-[340px] md:w-[380px] group cursor-pointer" onclick="filterCategory('couture')">
+<div class="relative aspect-[3/4] overflow-hidden bg-brand-warm border border-brand-border/80">
+<img alt="Couture Overcoats" class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1UcXMHRnJUwG224u3pr07fW4X1qgvIZaxcb1iiJyBteJxhblO76TpEEwP_oTVWw9mOFL8hROA6aKAfjyS04LkCu9EKgCyACB0eFj9TFfUZJsAb-_cN78_XbC1cVX0JCbsaMyy9yDVkWRv-XJV5OD__Yq09qJjFjsxx27V0_jIXT4P2t1XBw4_31k-q9V4sGn6zIveFEXzorA2fc5ye1rIrCIRD9vTkAXp6T9s1fIAUxIFtNRAHG-WEUVg"/>
+<div class="absolute top-4 left-4 bg-brand-stone/90 backdrop-blur-sm px-3 py-1 text-[9px] uppercase tracking-widest font-medium text-brand-charcoal">
+              Lookbook 01
+            </div>
+</div>
+<div class="mt-5 flex items-baseline justify-between">
+<h4 class="font-serif-display text-2xl text-brand-charcoal group-hover:italic transition-all">Couture &amp; Coats</h4>
+<span class="text-xs tracking-luxury text-brand-muted">14 Designs →</span>
+</div>
+<p class="text-xs text-brand-muted mt-1 font-light">Double-faced cashmere, structured trench cuts, sculptural woolens.</p>
+</div>
+<!-- Category 2: Leather & Artifacts (IMAGE_4) -->
+<div class="flex-none w-[280px] sm:w-[340px] md:w-[380px] group cursor-pointer" onclick="filterCategory('leather')">
+<div class="relative aspect-[3/4] overflow-hidden bg-brand-warm border border-brand-border/80">
+<img alt="Sculptural Leather" class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1U6XsCjUArn8JCFahxgGdmrpVTrfbPhX_C4H7AHH5ulggHObPpFt8HJwpg1ph6OliEfyv6OB7h09k8fD3DiDy775APliARiEQSx3o5hbd49B_YdzC0KOLPvB4vODlT31Ao1tRKaKHzmTnzAUAP93P7QYacObj8qFKJONYNWU2vpQ7sV__fKvZc4XDk7fD1pKz8gKZx6IJw69omfHqPl-MAKHKI4-q0SV2qACwdYb9M93hHy_Vekx09aD74"/>
+<div class="absolute top-4 left-4 bg-brand-stone/90 backdrop-blur-sm px-3 py-1 text-[9px] uppercase tracking-widest font-medium text-brand-charcoal">
+              Lookbook 02
+            </div>
+</div>
+<div class="mt-5 flex items-baseline justify-between">
+<h4 class="font-serif-display text-2xl text-brand-charcoal group-hover:italic transition-all">Leather Goods</h4>
+<span class="text-xs tracking-luxury text-brand-muted">09 Designs →</span>
+</div>
+<p class="text-xs text-brand-muted mt-1 font-light">Saddlery-stitched calfskin, sculpted totes, architectural hardware.</p>
+</div>
+<!-- Category 3: Architectural Furniture & Seating (IMAGE_6) -->
+<div class="flex-none w-[280px] sm:w-[340px] md:w-[380px] group cursor-pointer" onclick="filterCategory('furniture')">
+<div class="relative aspect-[3/4] overflow-hidden bg-brand-warm border border-brand-border/80">
+<img alt="Showroom Seating &amp; Tables" class="w-full h-full object-cover object-left transition-transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"/>
+<div class="absolute top-4 left-4 bg-brand-stone/90 backdrop-blur-sm px-3 py-1 text-[9px] uppercase tracking-widest font-medium text-brand-charcoal">
+              Lookbook 03
+            </div>
+</div>
+<div class="mt-5 flex items-baseline justify-between">
+<h4 class="font-serif-display text-2xl text-brand-charcoal group-hover:italic transition-all">Living &amp; Seating</h4>
+<span class="text-xs tracking-luxury text-brand-muted">18 Designs →</span>
+</div>
+<p class="text-xs text-brand-muted mt-1 font-light">Chiseled monolithic tables, raw linen daybeds, sculpted bronze chairs.</p>
+</div>
+<!-- Category 4: Ceramic & Stone Vessels -->
+<div class="flex-none w-[280px] sm:w-[340px] md:w-[380px] group cursor-pointer" onclick="filterCategory('vessels')">
+<div class="relative aspect-[3/4] overflow-hidden bg-brand-warm border border-brand-border/80">
+<div class="w-full h-full bg-[#ebe5da] flex items-center justify-center p-8 relative">
+<div class="w-3/4 h-3/4 border border-brand-border rounded-full flex items-center justify-center">
+<span class="font-serif-display italic text-3xl text-brand-muted/70">Terra &amp; Bronze</span>
+</div>
+<div class="absolute inset-0 bg-brand-charcoal/5 mix-blend-multiply"></div>
+</div>
+<div class="absolute top-4 left-4 bg-brand-stone/90 backdrop-blur-sm px-3 py-1 text-[9px] uppercase tracking-widest font-medium text-brand-charcoal">
+              Lookbook 04
+            </div>
+</div>
+<div class="mt-5 flex items-baseline justify-between">
+<h4 class="font-serif-display text-2xl text-brand-charcoal group-hover:italic transition-all">Vessels &amp; Objects</h4>
+<span class="text-xs tracking-luxury text-brand-muted">12 Designs →</span>
+</div>
+<p class="text-xs text-brand-muted mt-1 font-light">Volcanic stone urns, blackened cast iron vases, tactile ceramics.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 7 & 8. PRODUCT SHOWCASE — ASYMMETRIC EDITORIAL RHYTHM -->
+<section class="py-24 md:py-36 px-6 md:px-16 lg:px-24 bg-[#f4f0e7] border-y border-brand-border" id="showcase">
+<div class="max-w-[1720px] mx-auto">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24">
+<div>
+<span class="text-[11px] font-medium tracking-widest-xl uppercase text-brand-taupe block mb-3">
+            03 / Catalog &amp; Specimens
+          </span>
+<h2 class="font-serif-display text-4xl sm:text-6xl md:text-7xl font-light text-brand-charcoal">
+            The Permanent Exhibition
+          </h2>
+</div>
+<div class="mt-6 md:mt-0 flex items-center gap-3">
+<span class="text-xs uppercase tracking-luxury text-brand-muted">Filter:</span>
+<button class="catalog-tab active px-3 py-1 text-xs uppercase tracking-widest border-b-2 border-brand-charcoal text-brand-charcoal font-medium" onclick="filterGrid('all')">All (06)</button>
+<button class="catalog-tab px-3 py-1 text-xs uppercase tracking-widest text-brand-muted hover:text-brand-charcoal" onclick="filterGrid('apparel')">Apparel</button>
+<button class="catalog-tab px-3 py-1 text-xs uppercase tracking-widest text-brand-muted hover:text-brand-charcoal" onclick="filterGrid('accessories')">Objects</button>
+</div>
+</div>
+<!-- PRODUCT 01: HERO PRODUCT — FULL WIDTH DRAMA (IMAGE_5) -->
+<div class="mb-24 lg:mb-36 bg-brand-stone border border-brand-border/90 group cursor-pointer" onclick="openProductModal('coat')">
+<div class="grid grid-cols-1 lg:grid-cols-12">
+<div class="lg:col-span-7 overflow-hidden relative min-h-[480px] lg:min-h-[680px]">
+<img alt="The Calantha Sculpted Cashmere Overcoat" class="w-full h-full object-cover object-top transition-transform duration-1000 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1UcXMHRnJUwG224u3pr07fW4X1qgvIZaxcb1iiJyBteJxhblO76TpEEwP_oTVWw9mOFL8hROA6aKAfjyS04LkCu9EKgCyACB0eFj9TFfUZJsAb-_cN78_XbC1cVX0JCbsaMyy9yDVkWRv-XJV5OD__Yq09qJjFjsxx27V0_jIXT4P2t1XBw4_31k-q9V4sGn6zIveFEXzorA2fc5ye1rIrCIRD9vTkAXp6T9s1fIAUxIFtNRAHG-WEUVg"/>
+<div class="absolute top-6 left-6 bg-brand-stone/90 backdrop-blur-md px-4 py-1.5 text-[10px] tracking-widest uppercase font-medium">
+              Hero Piece · No. 001
+            </div>
+</div>
+<div class="lg:col-span-5 p-8 sm:p-12 lg:p-16 flex flex-col justify-between bg-brand-stone">
+<div>
+<div class="flex items-center justify-between text-xs tracking-widest-xl uppercase text-brand-taupe mb-4">
+<span>Atelier Tailoring</span>
+<span>Autumn / Winter Series</span>
+</div>
+<h3 class="font-serif-display text-4xl sm:text-5xl lg:text-6xl text-brand-charcoal leading-[1.05] mb-6">
+                Calantha Draped Cashmere Coat
+              </h3>
+<p class="text-sm md:text-base text-brand-muted font-light leading-relaxed mb-8">
+                Engineered with an architectural shoulder line and integrated dramatic scarf drape. Tailored from 850gsm raw unbleached Mongolian cashmere, left in its natural warm oat tint to highlight the rich natural fiber variance.
+              </p>
+<!-- Spec Details Grid -->
+<div class="grid grid-cols-2 gap-4 py-6 border-y border-brand-border text-xs">
+<div>
+<span class="text-brand-taupe uppercase text-[10px] tracking-wider block">Material</span>
+<span class="font-medium text-brand-charcoal">100% Raw Cashmere</span>
+</div>
+<div>
+<span class="text-brand-taupe uppercase text-[10px] tracking-wider block">Origin</span>
+<span class="font-medium text-brand-charcoal">Biella &amp; Atelier Siri</span>
+</div>
+<div>
+<span class="text-brand-taupe uppercase text-[10px] tracking-wider block">Dimensions</span>
+<span class="font-medium text-brand-charcoal">Tailored to Client Form</span>
+</div>
+<div>
+<span class="text-brand-taupe uppercase text-[10px] tracking-wider block">Price</span>
+<span class="font-medium text-brand-charcoal">₹1,85,000</span>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<button class="inline-flex items-center justify-center gap-3 bg-brand-charcoal text-brand-stone px-8 py-4 text-xs uppercase tracking-luxury hover:bg-brand-gold hover:text-brand-charcoal transition-colors">
+<span>Inspect Specimen</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+</button>
+<span class="text-xs text-brand-muted tracking-widest uppercase">Made to Measure</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ASYMMETRIC 2-COLUMN RHYTHM: PRODUCT 02 & 03 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-14 mb-24 lg:mb-36 items-stretch">
+<!-- PRODUCT 02: TOTE ON LIMESTONE (Larger column) (IMAGE_4) -->
+<div class="md:col-span-7 bg-brand-stone border border-brand-border p-6 sm:p-10 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('tote')">
+<div class="overflow-hidden aspect-[4/5] relative mb-8 bg-brand-warm">
+<img alt="Aura Sculptural Leather Tote" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1U6XsCjUArn8JCFahxgGdmrpVTrfbPhX_C4H7AHH5ulggHObPpFt8HJwpg1ph6OliEfyv6OB7h09k8fD3DiDy775APliARiEQSx3o5hbd49B_YdzC0KOLPvB4vODlT31Ao1tRKaKHzmTnzAUAP93P7QYacObj8qFKJONYNWU2vpQ7sV__fKvZc4XDk7fD1pKz8gKZx6IJw69omfHqPl-MAKHKI4-q0SV2qACwdYb9M93hHy_Vekx09aD74"/>
+<div class="absolute bottom-4 left-4 bg-brand-charcoal text-brand-stone text-[9px] uppercase tracking-widest px-3 py-1">
+              Specimen 002
+            </div>
+</div>
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<h4 class="font-serif-display text-3xl sm:text-4xl text-brand-charcoal group-hover:italic transition-all">Aura Sculpted Saddle Tote</h4>
+<span class="font-sans font-medium text-sm text-brand-charcoal">₹78,000</span>
+</div>
+<p class="text-xs md:text-sm text-brand-muted font-light mb-6">
+              Hand-blocked vegetable-tanned Italian bridle leather resting upon brushed chiseled brass gussets. Self-standing architectural silhouette that patinas with years of touch.
+            </p>
+<div class="flex items-center justify-between pt-4 border-t border-brand-border text-xs uppercase tracking-luxury text-brand-charcoal">
+<span>Cognac Raw Sienna</span>
+<span class="group-hover:translate-x-2 transition-transform">→ View Dossier</span>
+</div>
+</div>
+</div>
+<!-- PRODUCT 03: TRAVERTINE MONOLITH TABLE (Slimmer vertical column) (IMAGE_6) -->
+<div class="md:col-span-5 bg-brand-stone border border-brand-border p-6 sm:p-10 flex flex-col justify-between group cursor-pointer" onclick="openProductModal('table')">
+<div class="overflow-hidden aspect-square relative mb-8 bg-brand-warm">
+<img alt="Travertine Plinth Console" class="w-full h-full object-cover object-bottom group-hover:scale-105 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"/>
+<div class="absolute bottom-4 left-4 bg-brand-charcoal text-brand-stone text-[9px] uppercase tracking-widest px-3 py-1">
+              Specimen 003
+            </div>
+</div>
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<h4 class="font-serif-display text-3xl text-brand-charcoal group-hover:italic transition-all">Siri Monolith Plinth Console</h4>
+<span class="font-sans font-medium text-sm text-brand-charcoal">₹2,45,000</span>
+</div>
+<p class="text-xs md:text-sm text-brand-muted font-light mb-6">
+              Carved from a single quarried block of porous Tivoli travertine. Balanced with an offset canted pedestal that plays with gravity and directional light.
+            </p>
+<div class="flex items-center justify-between pt-4 border-t border-brand-border text-xs uppercase tracking-luxury text-brand-charcoal">
+<span>Honed Roman Stone</span>
+<span class="group-hover:translate-x-2 transition-transform">→ View Dossier</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ASYMMETRIC 3-COLUMN RHYTHM: PRODUCTS 04, 05, 06 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- PRODUCT 04: Raw Silk Stola (IMAGE_5) -->
+<div class="bg-brand-stone border border-brand-border p-6 group cursor-pointer flex flex-col justify-between" onclick="openProductModal('silk')">
+<div>
+<div class="aspect-[3/4] overflow-hidden bg-brand-warm mb-6 relative">
+<img alt="Raw Silk Stola" class="w-full h-full object-cover object-center filter sepia-[25%] group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AEtjO1UcXMHRnJUwG224u3pr07fW4X1qgvIZaxcb1iiJyBteJxhblO76TpEEwP_oTVWw9mOFL8hROA6aKAfjyS04LkCu9EKgCyACB0eFj9TFfUZJsAb-_cN78_XbC1cVX0JCbsaMyy9yDVkWRv-XJV5OD__Yq09qJjFjsxx27V0_jIXT4P2t1XBw4_31k-q9V4sGn6zIveFEXzorA2fc5ye1rIrCIRD9vTkAXp6T9s1fIAUxIFtNRAHG-WEUVg"/>
+<span class="absolute top-3 left-3 bg-brand-stone/90 text-[9px] uppercase tracking-widest px-2.5 py-1">No. 004</span>
+</div>
+<h5 class="font-serif-display text-2xl text-brand-charcoal group-hover:italic transition-all">Loomed Wild Silk Wrap</h5>
+<p class="text-xs text-brand-muted font-light mt-2 mb-4">Hand-spun Tussar wild silk with raw selvedge edging. Naturally insulating and subtly iridescent.</p>
+</div>
+<div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs tracking-luxury">
+<span class="font-medium text-brand-charcoal">₹34,000</span>
+<span class="text-brand-muted group-hover:text-brand-charcoal">Inquire →</span>
+</div>
+</div>
+<!-- PRODUCT 05: Cast Bronze Vessel (IMAGE_6) -->
+<div class="bg-brand-stone border border-brand-border p-6 group cursor-pointer flex flex-col justify-between" onclick="openProductModal('bronze')">
+<div>
+<div class="aspect-[3/4] overflow-hidden bg-brand-warm mb-6 relative">
+<img alt="Cast Bronze Vessel" class="w-full h-full object-cover object-right filter brightness-95 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"/>
+<span class="absolute top-3 left-3 bg-brand-stone/90 text-[9px] uppercase tracking-widest px-2.5 py-1">No. 005</span>
+</div>
+<h5 class="font-serif-display text-2xl text-brand-charcoal group-hover:italic transition-all">Brutalist Foundry Amphora</h5>
+<p class="text-xs text-brand-muted font-light mt-2 mb-4">Sand-cast solid brass with acid-patinated ebony finish. Limited to an edition of 25 serialized castings.</p>
+</div>
+<div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs tracking-luxury">
+<span class="font-medium text-brand-charcoal">₹92,000</span>
+<span class="text-brand-muted group-hover:text-brand-charcoal">Inquire →</span>
+</div>
+</div>
+<!-- PRODUCT 06: Minimalist Linen Lounge (IMAGE_4) -->
+<div class="bg-brand-stone border border-brand-border p-6 group cursor-pointer flex flex-col justify-between" onclick="openProductModal('lounge')">
+<div>
+<div class="aspect-[3/4] overflow-hidden bg-brand-warm mb-6 relative">
+<img alt="Belgian Linen Lounge" class="w-full h-full object-cover object-center filter hue-rotate-15 group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AEtjO1U6XsCjUArn8JCFahxgGdmrpVTrfbPhX_C4H7AHH5ulggHObPpFt8HJwpg1ph6OliEfyv6OB7h09k8fD3DiDy775APliARiEQSx3o5hbd49B_YdzC0KOLPvB4vODlT31Ao1tRKaKHzmTnzAUAP93P7QYacObj8qFKJONYNWU2vpQ7sV__fKvZc4XDk7fD1pKz8gKZx6IJw69omfHqPl-MAKHKI4-q0SV2qACwdYb9M93hHy_Vekx09aD74"/>
+<span class="absolute top-3 left-3 bg-brand-stone/90 text-[9px] uppercase tracking-widest px-2.5 py-1">No. 006</span>
+</div>
+<h5 class="font-serif-display text-2xl text-brand-charcoal group-hover:italic transition-all">Verona Low Daybed</h5>
+<p class="text-xs text-brand-muted font-light mt-2 mb-4">Heavyweight Belgian stonewashed flax resting on smoked oak runners. Low-profile Japanese proportion.</p>
+</div>
+<div class="pt-4 border-t border-brand-border flex items-center justify-between text-xs tracking-luxury">
+<span class="font-medium text-brand-charcoal">₹3,10,000</span>
+<span class="text-brand-muted group-hover:text-brand-charcoal">Inquire →</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 10. FEATURED SIGNATURE COLLECTION BREAK — IMMERSIVE SENSORY SECTION (IMAGE_6) -->
+<section class="relative min-h-[600px] md:min-h-[750px] w-full flex items-center justify-center text-center px-6 overflow-hidden bg-brand-pure text-brand-stone">
+<div class="absolute inset-0 z-0">
+<img alt="Signature Collection Ambience" class="w-full h-full object-cover object-center opacity-40 filter contrast-125 scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-brand-pure via-brand-pure/50 to-brand-pure/80"></div>
+</div>
+<div class="relative z-10 max-w-4xl mx-auto py-20 flex flex-col items-center">
+<span class="text-[10px] md:text-xs font-semibold tracking-widest-xl uppercase text-brand-gold mb-6 border border-brand-gold/40 px-4 py-1.5 rounded-full">
+        Curator's Special Commission
+      </span>
+<h2 class="font-serif-display text-5xl sm:text-7xl md:text-8xl font-light tracking-tight leading-[0.95] mb-8">
+        Objects With Presence.
+      </h2>
+<p class="text-sm sm:text-base md:text-lg text-brand-stone/80 max-w-xl font-light leading-relaxed mb-10">
+        In a world of ephemeral digital noise, we curate artifacts that demand stillness. Tactile heirlooms crafted to anchor the spaces you inhabit and the silhouettes you wear.
+      </p>
+<a class="inline-flex items-center gap-3 bg-brand-stone text-brand-charcoal px-8 py-4 text-xs tracking-widest uppercase font-medium hover:bg-brand-gold transition-colors duration-300" href="#contact">
+<span>Request The Physical Lookbook Folio</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+</a>
+</div>
+</section>
+<!-- 11. BRAND STORY — EDITORIAL PROVENANCE & PHILOSOPHY -->
+<section class="py-24 md:py-36 px-6 md:px-16 lg:px-24 bg-brand-stone" id="story">
+<div class="max-w-[1720px] mx-auto">
+<!-- Eyebrow & Headline -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-20 items-start">
+<div class="lg:col-span-5">
+<span class="text-[11px] font-medium tracking-widest-xl uppercase text-brand-taupe block mb-4">
+            04 / Provenance &amp; Manifesto
+          </span>
+<h2 class="font-serif-display text-4xl sm:text-5xl md:text-6xl font-light text-brand-charcoal leading-[1.08]">
+            More than products. <br/>
+<span class="italic font-normal">A point of view.</span>
+</h2>
+</div>
+<div class="lg:col-span-7 flex flex-col gap-6 text-sm md:text-base text-brand-muted font-light leading-relaxed">
+<p class="text-lg md:text-xl text-brand-charcoal font-serif-display italic">
+            “We founded Siri Fashion Store on the premise that an interior and a wardrobe should converse with the same dialect: quiet materiality, honest seams, and unhurried elegance.”
+          </p>
+<p>
+            Operating between our design laboratory and our network of family-run artisan guilds, each edition begins not with an aesthetic sketch, but with the raw mineral or botanical specimen. Whether selecting cold-drawn unpolished brass from Moradabad, vegetable-tanned hides from Tuscany, or loom-woven raw silks from Kashmir, we let material properties dictate the geometry.
+          </p>
+</div>
+</div>
+<!-- Visual 3-Pillar Editorial Story Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-brand-border/80">
+<!-- Pillar 1 -->
+<div class="p-8 bg-brand-warm border border-brand-border">
+<span class="font-serif-display text-3xl text-brand-taupe block mb-6">I.</span>
+<h4 class="font-serif-display text-2xl text-brand-charcoal mb-3">Architectural Honesty</h4>
+<p class="text-xs md:text-sm text-brand-muted leading-relaxed font-light">
+            Every fold, dart, mortise, and joint is laid bare. We never apply synthetic coatings or faux veneers to conceal the organic soul of our materials.
+          </p>
+</div>
+<!-- Pillar 2 -->
+<div class="p-8 bg-brand-warm border border-brand-border">
+<span class="font-serif-display text-3xl text-brand-taupe block mb-6">II.</span>
+<h4 class="font-serif-display text-2xl text-brand-charcoal mb-3">Master Guild Craftsmanship</h4>
+<p class="text-xs md:text-sm text-brand-muted leading-relaxed font-light">
+            Produced in micro-batches under fair artisanal patronage. Each garment and furniture artifact bears the mark of the hand that shaped it.
+          </p>
+</div>
+<!-- Pillar 3 -->
+<div class="p-8 bg-brand-warm border border-brand-border">
+<span class="font-serif-display text-3xl text-brand-taupe block mb-6">III.</span>
+<h4 class="font-serif-display text-2xl text-brand-charcoal mb-3">Permanent Longevity</h4>
+<p class="text-xs md:text-sm text-brand-muted leading-relaxed font-light">
+            Crafted to outlive generational cycles. Our patinas evolve with sun exposure, ambient moisture, and continuous gentle human stewardship.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 12. CONTACT / CLIENT ENQUIRY & CONCIERGE -->
+<section class="py-24 md:py-36 px-6 md:px-16 lg:px-24 bg-brand-warm border-t border-brand-border" id="contact">
+<div class="max-w-[1720px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+<!-- Left: Brand Contact Invitation -->
+<div class="lg:col-span-5">
+<span class="text-[11px] font-medium tracking-widest-xl uppercase text-brand-taupe block mb-4">
+            05 / Private Client Concierge
+          </span>
+<h2 class="font-serif-display text-4xl sm:text-6xl text-brand-charcoal font-light leading-[1.08] mb-6">
+            Found something <br/>
+<span class="italic">you love?</span>
+</h2>
+<p class="text-sm md:text-base text-brand-muted font-light leading-relaxed mb-8">
+            Let’s bring it into your sanctuary. Whether you require custom bespoke sizing, architectural specification for an interior project, or private showroom viewing, our curatorial team is at your disposal.
+          </p>
+<div class="space-y-4 text-xs tracking-luxury text-brand-charcoal">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-charcoal"></span>
+<span class="font-medium">Direct WhatsApp Concierge:</span>
+<a class="text-brand-muted hover:text-brand-charcoal underline" href="https://wa.me/" target="_blank">+91 (0) 98200 45812</a>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-charcoal"></span>
+<span class="font-medium">Studio Atelier:</span>
+<span class="text-brand-muted">Colaba Arts District, Mumbai</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-charcoal"></span>
+<span class="font-medium">Hours:</span>
+<span class="text-brand-muted">Mon — Sat, 11:00 — 19:00 IST</span>
+</div>
+</div>
+<div class="mt-8 flex items-center gap-4">
+<a class="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3.5 rounded-full text-xs uppercase tracking-widest font-medium hover:opacity-90 transition-opacity" href="https://wa.me/" target="_blank">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.173.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824z"></path></svg>
+<span>Instant WhatsApp Inquiry</span>
+</a>
+</div>
+</div>
+<!-- Right: Editorial Inquiry Form -->
+<div class="lg:col-span-7 bg-brand-stone p-8 sm:p-12 border border-brand-border shadow-sm">
+<form class="space-y-6" onsubmit="handleInquirySubmit(event)">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-brand-taupe mb-2">Your Name *</label>
+<input class="w-full bg-transparent border-b border-brand-border py-3 text-sm focus:outline-none focus:border-brand-charcoal transition-colors" placeholder="Elena Vance" required="" type="text"/>
+</div>
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-brand-taupe mb-2">Direct Contact (Email or Phone) *</label>
+<input class="w-full bg-transparent border-b border-brand-border py-3 text-sm focus:outline-none focus:border-brand-charcoal transition-colors" placeholder="elena@vance-atelier.com" required="" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-brand-taupe mb-2">Subject Of Inquiry</label>
+<select class="w-full bg-transparent border-b border-brand-border py-3 text-sm focus:outline-none focus:border-brand-charcoal transition-colors text-brand-charcoal">
+<option>Calantha Draped Cashmere Coat (₹1,85,000)</option>
+<option>Aura Sculpted Saddle Tote (₹78,000)</option>
+<option>Siri Monolith Plinth Console (₹2,45,000)</option>
+<option>Custom Architectural Commission</option>
+<option>Showroom Private Appointment</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-brand-taupe mb-2">Location / City</label>
+<input class="w-full bg-transparent border-b border-brand-border py-3 text-sm focus:outline-none focus:border-brand-charcoal transition-colors" placeholder="Mumbai, New Delhi, London..." type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-brand-taupe mb-2">Notes, Specific Dimensions or Requirements</label>
+<textarea class="w-full bg-transparent border-b border-brand-border py-3 text-sm focus:outline-none focus:border-brand-charcoal transition-colors resize-none" placeholder="Tell us about your project or sizing questions..." rows="3"></textarea>
+</div>
+<div class="pt-4 flex items-center justify-between">
+<button class="bg-brand-charcoal text-brand-stone px-8 py-4 text-xs uppercase tracking-luxury hover:bg-brand-gold hover:text-brand-charcoal transition-colors duration-300" type="submit">
+                Transmit Request To Curators
+              </button>
+<span class="text-xs text-brand-taupe italic hidden" id="form-msg">Received with appreciation.</span>
+</div>
+</form>
+</div>
+</div>
+</div>
+</section>
+<!-- 13. MINIMAL LUXURY FOOTER -->
+<footer class="py-16 px-6 md:px-16 lg:px-24 bg-[#121110] text-[#c9c3b8] border-t border-brand-charcoal">
+<div class="max-w-[1720px] mx-auto">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-12 pb-16 border-b border-[#262320]">
+<div>
+<span class="font-serif-display text-4xl text-brand-stone tracking-widest uppercase block mb-3">SIRI</span>
+<p class="text-xs tracking-luxury uppercase text-[#8a8277] max-w-sm">
+            Architectural Atelier, Haute Wardrobe &amp; Digital Lookbook.
+          </p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-10 text-xs tracking-luxury uppercase">
+<div>
+<span class="text-[10px] text-[#6b645b] block mb-4 tracking-widest">Departments</span>
+<ul class="space-y-2.5 text-[#b0a89d]">
+<li><a class="hover:text-brand-stone transition-colors" href="#categories">Couture Tailoring</a></li>
+<li><a class="hover:text-brand-stone transition-colors" href="#categories">Bridle Leather</a></li>
+<li><a class="hover:text-brand-stone transition-colors" href="#categories">Monolith Furniture</a></li>
+<li><a class="hover:text-brand-stone transition-colors" href="#categories">Cast Bronzes</a></li>
+</ul>
+</div>
+<div>
+<span class="text-[10px] text-[#6b645b] block mb-4 tracking-widest">Showrooms</span>
+<ul class="space-y-2.5 text-[#b0a89d]">
+<li>Mumbai Atelier</li>
+<li>Paris Salon (By Appt)</li>
+<li>Dubai Design District</li>
+</ul>
+</div>
+<div>
+<span class="text-[10px] text-[#6b645b] block mb-4 tracking-widest">Connect</span>
+<ul class="space-y-2.5 text-[#b0a89d]">
+<li><a class="hover:text-brand-stone transition-colors" href="https://instagram.com" target="_blank">Instagram</a></li>
+<li><a class="hover:text-brand-stone transition-colors" href="https://wa.me" target="_blank">WhatsApp</a></li>
+<li><a class="hover:text-brand-stone transition-colors" href="mailto:concierge@siri.design">concierge@siri.design</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] tracking-widest uppercase text-[#6b645b] gap-4">
+<span>© MMXXV Siri Fashion Store. All Rights Reserved.</span>
+<span>Crafted With Quiet Intent</span>
+<span>Back To Top ↑</span>
+</div>
+</div>
+</footer>
+<!-- 9. INTERACTIVE PRODUCT DETAIL MODAL (HIGH-END LOOKBOOK DOSSIER) -->
+<div class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6 md:p-10 modal-backdrop bg-brand-charcoal/60 transition-opacity duration-300" id="product-modal">
+<div class="relative bg-brand-stone max-w-5xl w-full max-h-[92vh] overflow-y-auto border border-brand-border shadow-2xl p-6 sm:p-10 md:p-12">
+<!-- Close Button -->
+<button aria-label="Close modal" class="absolute top-6 right-6 text-brand-charcoal hover:opacity-60 p-2 text-xl tracking-widest focus:outline-none" onclick="closeProductModal()">
+        ✕
+      </button>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start mt-2">
+<!-- Modal Image -->
+<div class="md:col-span-6 bg-brand-warm border border-brand-border overflow-hidden aspect-[3/4] relative">
+<img alt="Product Specimen" class="w-full h-full object-cover object-center" id="modal-img" src="https://lh3.googleusercontent.com/aida/AEtjO1UcXMHRnJUwG224u3pr07fW4X1qgvIZaxcb1iiJyBteJxhblO76TpEEwP_oTVWw9mOFL8hROA6aKAfjyS04LkCu9EKgCyACB0eFj9TFfUZJsAb-_cN78_XbC1cVX0JCbsaMyy9yDVkWRv-XJV5OD__Yq09qJjFjsxx27V0_jIXT4P2t1XBw4_31k-q9V4sGn6zIveFEXzorA2fc5ye1rIrCIRD9vTkAXp6T9s1fIAUxIFtNRAHG-WEUVg"/>
+<div class="absolute top-4 left-4 bg-brand-stone/90 text-[10px] uppercase tracking-widest px-3 py-1 font-medium" id="modal-badge">
+            Permanent Atelier Specimen
+          </div>
+</div>
+<!-- Modal Info -->
+<div class="md:col-span-6 flex flex-col justify-between">
+<div>
+<span class="text-[10px] tracking-widest-xl uppercase text-brand-taupe block mb-2" id="modal-category">Department</span>
+<h3 class="font-serif-display text-3xl sm:text-4xl text-brand-charcoal mb-3" id="modal-title">Product Name</h3>
+<div class="text-xl font-medium text-brand-charcoal mb-6" id="modal-price">₹00,000</div>
+<p class="text-xs sm:text-sm text-brand-muted font-light leading-relaxed mb-6" id="modal-desc">
+              Detailed description of materials, tactile texture, and architectural cut.
+            </p>
+<div class="space-y-3 py-4 border-y border-brand-border text-xs mb-8">
+<div class="flex justify-between">
+<span class="text-brand-taupe uppercase tracking-wider text-[10px]">Materials</span>
+<span class="font-medium text-brand-charcoal" id="modal-material">Raw Materials</span>
+</div>
+<div class="flex justify-between">
+<span class="text-brand-taupe uppercase tracking-wider text-[10px]">Dimensions / Cut</span>
+<span class="font-medium text-brand-charcoal" id="modal-dimensions">Custom Bespoke</span>
+</div>
+<div class="flex justify-between">
+<span class="text-brand-taupe uppercase tracking-wider text-[10px]">Lead Time</span>
+<span class="font-medium text-brand-charcoal" id="modal-lead">3–4 Weeks Handcraft</span>
+</div>
+<div class="flex justify-between">
+<span class="text-brand-taupe uppercase tracking-wider text-[10px]">Delivery</span>
+<span class="font-medium text-brand-charcoal">White-Glove Courier Included</span>
+</div>
+</div>
+</div>
+<!-- CTAs -->
+<div class="flex flex-col sm:flex-row gap-3">
+<a class="flex-1 bg-brand-charcoal text-brand-stone text-center py-3.5 text-xs uppercase tracking-luxury hover:bg-brand-gold hover:text-brand-charcoal transition-colors" href="https://wa.me/?text=Hello%20Siri%20Atelier,%20I%20would%20like%20to%20inquire%20about%20a%20specimen." id="modal-whatsapp-btn" target="_blank">
+              Enquire Via WhatsApp
+            </a>
+<button class="px-5 py-3.5 border border-brand-charcoal text-brand-charcoal text-xs uppercase tracking-luxury hover:bg-brand-charcoal hover:text-brand-stone transition-colors flex items-center justify-center gap-2" onclick="shareProduct()">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+<span>Share</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- JAVASCRIPT LOGIC -->
+<script>
+    // Product Database for Modal
+    const productData = {
+      coat: {
+        title: "Calantha Draped Cashmere Coat",
+        category: "Atelier Outerwear · Autumn/Winter",
+        price: "₹1,85,000",
+        desc: "Engineered with an architectural shoulder line and integrated dramatic scarf drape. Tailored from 850gsm raw unbleached Mongolian cashmere, left in its natural warm oat tint to highlight the rich natural fiber variance.",
+        material: "100% Raw Mongolian Cashmere & Bemberg Lining",
+        dimensions: "Made to Measure / Tailored Cut",
+        lead: "3–4 Weeks Handcrafting in Atelier",
+        image: "https://lh3.googleusercontent.com/aida/AEtjO1UcXMHRnJUwG224u3pr07fW4X1qgvIZaxcb1iiJyBteJxhblO76TpEEwP_oTVWw9mOFL8hROA6aKAfjyS04LkCu9EKgCyACB0eFj9TFfUZJsAb-_cN78_XbC1cVX0JCbsaMyy9yDVkWRv-XJV5OD__Yq09qJjFjsxx27V0_jIXT4P2t1XBw4_31k-q9V4sGn6zIveFEXzorA2fc5ye1rIrCIRD9vTkAXp6T9s1fIAUxIFtNRAHG-WEUVg"
+      },
+      tote: {
+        title: "Aura Sculpted Saddle Tote",
+        category: "Leather Goods & Artifacts",
+        price: "₹78,000",
+        desc: "Hand-blocked vegetable-tanned Italian bridle leather resting upon brushed chiseled brass gussets. Self-standing architectural silhouette that patinas with years of touch.",
+        material: "Vachetta Bridle Leather & Milled Solid Brass",
+        dimensions: "42cm Width × 36cm Height × 18cm Depth",
+        lead: "In Stock · Immediate Dispatch",
+        image: "https://lh3.googleusercontent.com/aida/AEtjO1U6XsCjUArn8JCFahxgGdmrpVTrfbPhX_C4H7AHH5ulggHObPpFt8HJwpg1ph6OliEfyv6OB7h09k8fD3DiDy775APliARiEQSx3o5hbd49B_YdzC0KOLPvB4vODlT31Ao1tRKaKHzmTnzAUAP93P7QYacObj8qFKJONYNWU2vpQ7sV__fKvZc4XDk7fD1pKz8gKZx6IJw69omfHqPl-MAKHKI4-q0SV2qACwdYb9M93hHy_Vekx09aD74"
+      },
+      table: {
+        title: "Siri Monolith Plinth Console",
+        category: "Architectural Interior Specimen",
+        price: "₹2,45,000",
+        desc: "Carved from a single quarried block of porous Tivoli travertine. Balanced with an offset canted pedestal that plays with gravity and directional light.",
+        material: "Quarried Italian Tivoli Travertine (Honed/Porous)",
+        dimensions: "180cm Length × 45cm Depth × 78cm Height",
+        lead: "Made to Order · 5 Weeks Sculpting",
+        image: "https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"
+      },
+      silk: {
+        title: "Loomed Wild Silk Wrap",
+        category: "Handwoven Textiles",
+        price: "₹34,000",
+        desc: "Hand-spun Tussar wild silk with raw selvedge edging. Naturally insulating and subtly iridescent with raw botanical luster.",
+        material: "100% Hand-loomed Tussar Silk",
+        dimensions: "220cm × 110cm Stola Wrap",
+        lead: "In Stock · Immediate Dispatch",
+        image: "https://lh3.googleusercontent.com/aida/AEtjO1UcXMHRnJUwG224u3pr07fW4X1qgvIZaxcb1iiJyBteJxhblO76TpEEwP_oTVWw9mOFL8hROA6aKAfjyS04LkCu9EKgCyACB0eFj9TFfUZJsAb-_cN78_XbC1cVX0JCbsaMyy9yDVkWRv-XJV5OD__Yq09qJjFjsxx27V0_jIXT4P2t1XBw4_31k-q9V4sGn6zIveFEXzorA2fc5ye1rIrCIRD9vTkAXp6T9s1fIAUxIFtNRAHG-WEUVg"
+      },
+      bronze: {
+        title: "Brutalist Foundry Amphora",
+        category: "Sculptural Objects",
+        price: "₹92,000",
+        desc: "Sand-cast solid brass with acid-patinated ebony finish. Limited to an edition of 25 serialized castings with stamped atelier hallmark.",
+        material: "Sand-Cast Solid Brass / Chemical Patina",
+        dimensions: "32cm Height × 22cm Diameter (9.4 kg)",
+        lead: "Limited Edition (3 Remaining)",
+        image: "https://lh3.googleusercontent.com/aida/AEtjO1U1XCVp22j9TPhx1tALnEYaxuujOuZpmzYj-9RlEjTrtEMYs7mMuqZ56bIcN-_3kueBFU3DELAx0zihqFi2qG5ODBE3rV5BQx1fy41x8KZN3Xx0rzRhfymDkYzyOaqEjhonnYFtTdfyBIBFn6t-H6gKT-7UUxCMOhW8Vua4AVsgiCuxCDJCODsIVZ9SLtDSb-hnl7OAV7xj4KysezcKUjNKY1E-ndfbi6GDDNjjDWeaHSHg3TYmm-NPEg"
+      },
+      lounge: {
+        title: "Verona Low Daybed",
+        category: "Living & Seating",
+        price: "₹3,10,000",
+        desc: "Heavyweight Belgian stonewashed flax resting on smoked oak runners. Low-profile Japanese proportion with multi-density natural latex fill.",
+        material: "Organic Belgian Flax & Smoked Solid White Oak",
+        dimensions: "210cm Length × 95cm Width × 42cm Height",
+        lead: "4–6 Weeks Custom Upholstery",
+        image: "https://lh3.googleusercontent.com/aida/AEtjO1U6XsCjUArn8JCFahxgGdmrpVTrfbPhX_C4H7AHH5ulggHObPpFt8HJwpg1ph6OliEfyv6OB7h09k8fD3DiDy775APliARiEQSx3o5hbd49B_YdzC0KOLPvB4vODlT31Ao1tRKaKHzmTnzAUAP93P7QYacObj8qFKJONYNWU2vpQ7sV__fKvZc4XDk7fD1pKz8gKZx6IJw69omfHqPl-MAKHKI4-q0SV2qACwdYb9M93hHy_Vekx09aD74"
+      }
+    };
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function openProductModal(key) {
+      const item = productData[key];
+      if (!item) return;
+
+      document.getElementById('modal-title').textContent = item.title;
+      document.getElementById('modal-category').textContent = item.category;
+      document.getElementById('modal-price').textContent = item.price;
+      document.getElementById('modal-desc').textContent = item.desc;
+      document.getElementById('modal-material').textContent = item.material;
+      document.getElementById('modal-dimensions').textContent = item.dimensions;
+      document.getElementById('modal-lead').textContent = item.lead;
+      document.getElementById('modal-img').src = item.image;
+
+      const waText = encodeURIComponent(`Hello Siri Atelier Concierge, I am inquiring about the ${item.title} (${item.price}).`);
+      document.getElementById('modal-whatsapp-btn').href = `https://wa.me/?text=${waText}`;
+
+      const modal = document.getElementById('product-modal');
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductModal() {
+      const modal = document.getElementById('product-modal');
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Close modal on click outside
+    window.addEventListener('click', function(e) {
+      const modal = document.getElementById('product-modal');
+      if (e.target === modal) {
+        closeProductModal();
+      }
+    });
+
+    function shareProduct() {
+      if (navigator.share) {
+        navigator.share({
+          title: document.getElementById('modal-title').textContent,
+          text: 'Explore this specimen from Siri Fashion Store Lookbook.',
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Specimen link copied to clipboard.');
+      }
+    }
+
+    function filterCategory(cat) {
+      const showcase = document.getElementById('showcase');
+      showcase.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function filterGrid(type) {
+      const tabs = document.querySelectorAll('.catalog-tab');
+      tabs.forEach(t => {
+        t.classList.remove('border-b-2', 'border-brand-charcoal', 'text-brand-charcoal', 'font-medium');
+        t.classList.add('text-brand-muted');
+      });
+      event.target.classList.add('border-b-2', 'border-brand-charcoal', 'text-brand-charcoal', 'font-medium');
+      event.target.classList.remove('text-brand-muted');
+    }
+
+    function handleInquirySubmit(e) {
+      e.preventDefault();
+      const msg = document.getElementById('form-msg');
+      msg.classList.remove('hidden');
+      setTimeout(() => {
+        msg.classList.add('hidden');
+        e.target.reset();
+      }, 4000);
+    }
+
+    // Replay handwriting function
+    function replayHandwritingAnimation() {
+      const container = document.getElementById('handwriting-container');
+      const cloned = container.cloneNode(true);
+      container.parentNode.replaceChild(cloned, container);
+    }
+  </script>
+</body></html>
