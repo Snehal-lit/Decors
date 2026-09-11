@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
-import { ProductData } from "@/data/products";
+import { ProductData } from "@/types/product";
 
 interface ProductGridProps {
   products: ProductData[];

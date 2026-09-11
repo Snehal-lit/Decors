@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 export interface Product {
   id: string;
   name: string;
-  price: number | "Upon Request"; // Numeric price or "Upon Request"
+  price: number | string;
   image: string;
   category: string;
 }
