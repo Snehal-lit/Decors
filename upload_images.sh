@@ -1,7 +1,24 @@
 #!/bin/bash
-export TOKEN="skcQ0PpgnULlyyLq6tTvaaZZasPDew33gSmGCzP5Wv1xVXmnY5WTaoacAfm2LsE7fHN8iKC337Jdl0ocFUd5nI8BmwIm6Aqx8kUSXhu6ebjHPS774s7Eo27LVeZl3G1OpDm166hidLmD1dwrhHbwkrDNOkUNsmJLtLW21vGjjDDzyIQqlrYl"
-export PROJECT_ID="9oux6so5"
-export DATASET="production"
+# Load environment variables from .env.local if it exists
+if [ -f .env.local ]; then
+  # export variables from .env.local
+  while IFS='=' read -r key value; do
+    # Remove quotes and comments
+    value=$(echo "$value" | sed -e 's/^"//' -e 's/"$//')
+    if [[ ! -z "$key" && ! "$key" =~ ^# ]]; then
+      export "$key=$value"
+    fi
+  done < .env.local
+fi
+
+export TOKEN="${SANITY_API_WRITE_TOKEN}"
+export PROJECT_ID="${NEXT_PUBLIC_SANITY_PROJECT_ID:-9oux6so5}"
+export DATASET="${NEXT_PUBLIC_SANITY_DATASET:-production}"
+
+if [ -z "$TOKEN" ]; then
+  echo "Error: SANITY_API_WRITE_TOKEN is not set in .env.local"
+  exit 1
+fi
 
 for img in public/images/event/*.jpg; do
   echo "Uploading $img"
